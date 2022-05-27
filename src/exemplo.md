@@ -1,46 +1,10 @@
 Algoritmo de Programação Dinâmica para Distância de Edição
 ======
 
-O Problema
----------
-
-Imagine que você, como engenheiro de computação de uma empresa, foi requisitado para desenvolver uma ferramenta de correção automática de palavras em um texto.
-
-Nesse sentido a ideia seria que quando o usuário estivesse digitando no editor de ferramentas disponibilizado pela empresa, a ferramenta detectasse automaticamente que aquela palavra está ortograficamente errada, e, assim, sugerisse a forma correta:
-
-![](Corretor_Automatico.gif)
-
-Junto do seu time, vocês chegaram aos passos que teriam que ser executados em Sprints para o desenvolvimento de um MVP dessa ferramenta:
-
-
-
-1. *Ter um dicionário de palavras nas linguas que a ferramenta teria suporte*
-
-2. *Desensolver um modelo Bayesiano que identificasse qual a probabilidade de uma palavra aparecer próxima da outra*
-
-3. *Desenvolver um algoritmo que entenda o quão parecida uma palavra é com a outra*
-
-4. *Desenvolver um algoritmo que junta os passos anteriores, de modo a identificar uma palavra que não existe em uma lingua e devolver a mais próxima dela para o contexto das palavras próximas dela*
-
-5. *Desenvolver uma interface gráfica*
-
-
-Com isso o time decidiu que o Scrum Master da Sprint responsável pela *Passo* 3 seria você, ou seja, você tem o desafio de desenvolver um algoritmo capaz de entender a semelhança entre as palavras.
-
------------------------------------------------------
-
-Esse problema apresentado está inserido no escopo de *NLP* - **Natural Language Processing** -, ou em português, *PNL* - **Processamento de Linguagem Natural** -.
-
-Visto a ascensão de tecnologias de automação e a grande necessidade de tecnologias com a sua interface mais humana, um caso como esse não seria algo distante de ocorrer contigo. Dessa forma, podemos considerar o NLP um **Hot Topic**, ou seja, algo relevante para o contexto atual de tecnologia (e muito utilizado).
-
-Se você ficou preocupado de não saber como fazer isso, não se preocupe. Este Handout tem por objetivo te apresentar um modo de fazer isso.
-
 O Problema de identificar palavras parecidas
 --------------------------------------------
 
-O problema de entender o nível de semelhança entres palavras, na verdade é um problema que transcende o escopo das palavras e o universo de **NLP** ( ou em português, **PNL** ).
-
-A própria Google utiliza essa ferramenta no **Google Docs**:
+O problema de entender o nível de semelhança entres palavras é comum e precisa ser enfrentado diariamente nas mais diversas ferramentas. A própria Google utiliza essa ferramenta no **Google Docs**:
 
 ![](google_docs.png)
 
@@ -48,19 +12,60 @@ Um ótimo ponto de partida para começar a pensar na ideia de solução do probl
 
 ??? Atividade 1
 
-Reflita em um modo de pensar em quão parecidas são as palavras.
+Dado os dois grupos de palavras abaixo, qual dos grupos possui palavras mais semelhantes? É importante tentar listar os motivos.
+
+`md Estacionar` e `md Encaixar`
+
+`md Pão` e `md Chão`
 
 ::: Gabarito
-Uma solução é pensar em quanto passos teriamos que fazer de modo que uma palavra se torne a outra.
+Pão e Chão são palavras mais semelhantes pois o número de caracteres é mais próximo e possui maior quantidade de letras iguais em ambas as palavras.
 :::
 
 ???
 
-Ora, se para saber o quão parecida uma palavra é da outra, basta saber quantos passos são necessários aplicar em uma de modo que ela se torne a outra palavra. Então, só precisamos definir o que é necessário para que uma palavra precisa seja igual a outra. Apesar de parecer uma solução muito simples, é muito importante entender essas definições para que se pense em um algoritmo posteriormente. 
+Pense em quando estamos digitando. Se cometermos um erro durante essa digitação, o corretor consegue entender por algum motivo qual a palavra que você inicialmente queria digitar. Às vezes o corretor também comete erros...
+
+![](man_mana.jpg)
+
+Qual será que é esse motivo? Como que o corretor sabe a palavra que queremos digitar? Ora, ele só precisa saber o quão parecida é a palavra que você digitou das palavras que ele tem em seu banco de dados. Ele consegue saber essa aproximação linguística calculando quantos passos são necessários aplicar em uma de modo que ela se torne a outra palavra. Mas como ele faz isso? 
+
+
+??? Checkpoint
+
+Imagine que você digitou rápido no WhatsApp `md casa` ao invés `md casal`. Como você arrumaria?
+
+::: Gabarito
+Nesse caso, basta você adicionar a letra `md l`.
+:::
+
+???
+
+
+??? Checkpoint
+
+Agora você digitou errado de novo, mas dessa vez você queria escrever a palavra `md mesass` ao invés de `md mesas`. Como você arrumaria?
+
+::: Gabarito
+Agora você consegue remover a letra `md s`.
+:::
+
+???
+
+
+??? Checkpoint
+
+Por fim, antes de você enviar a bendita da mensagem, viu que que tinha escrito a palavra `md cassasão` ao invés de `md cassação`. Como você arrumaria?
+
+::: Gabarito
+Dessa vez há a subtração e a adição de uma letra, o que chamamos de substituição. Basta substituir o `md s` pelo `md ç`.
+:::
+
+???
 
 ??? Atividade 2
 
-Quais são as condições para que uma palavra seja igual a outra?
+Quais seriam as condições para que uma palavra seja igual a outra?
 
 ::: Gabarito
 É necessário que as palavras sejam somente formadas pelos `md mesmos caracteres` e que eles estejam `md ordenadas`
@@ -68,7 +73,7 @@ Quais são as condições para que uma palavra seja igual a outra?
 
 ???
 
-A ótica do problema não é mais simplesmente do que olhar para palavras, mas sim para as suas **sequências de caracteres**. Por esse motivo o problema não se restringe ao universo de **NLP** ou **Palavras**, mas está também inserido em outros contextos, como a de **Biologia Computacional**, por exemplo, já que calcular o nível de semelhança entre os DNAs e os RNAs é necessário fazer comparações entre suas bases nitrogendas de modo ordenado, as quais são representadas pelos caracteres: `md A` `md T` `md C` `md G` e no caso de RNAs também tem o`md U`.
+A ótica do problema não é mais simplesmente do que olhar para palavras, mas sim para as suas **sequências de caracteres**. Por esse motivo o problema não se restringe ao universo de **NLP** ou **Palavras**, mas está também inserido em outros contextos, como no próprio exemplo do corretor de texto.
 
 
 
@@ -109,11 +114,11 @@ A ideia
 
 É possível dizer o quanto duas palavras são diferentes ao contabilizar o número de ações necessárias para tornar uma palavra igual à outra. Podemos considerar como ações:
 
-* Substituir
-
 * Adicionar
 
 * Remover
+
+* Substituição
 
 O retorno da função deve ser a quantidade de ações que foram tomadas. Quanto maior o retorno da função, maior a diferença entre elas.
 
@@ -129,16 +134,6 @@ Veja que em laranja haveria uma inserção e em azul duas substituições. Para 
 
 ??? Checkpoint
 
-Qual deveria ser o número de ações para tornar a palavra `md casa` em `md capa`?.
-
-::: Gabarito
-Seria necessária uma ação, sendo ela de susbtituissão entre a letra `md s` e `md p`.
-:::
-
-???
-
-??? Checkpoint
-
 Qual deveria ser o número de ações para tornar a palavra `md ouro` em `md tesouro`?.
 
 ::: Gabarito
@@ -147,51 +142,18 @@ Seria necessário a inserção de `md tes` na palavra `md ouro`, ou seja, três 
 
 ???
 
-Nesse caso, bastaria comparar individualmente os caracters e sua ordem para obter um resultado de quanto as palavras são diferentes. 
 
 ??? Checkpoint
 
-Para uma primeira versão, sem rigor matemático, tente escrever um programa que retorne a semelhança entre duas palavras. 
-
-Dica: lembre-se que o retorno da função deve ser um inteiro equivalente ao número de ações.
+Qual deveria ser o número de ações para tornar a palavra `md céu` em `md celular`?.
 
 ::: Gabarito
-
-Abaixo está uma possível implementação. Ela possui muitos problemas, consegue identificar quais? Tire alguns minutos e tente pensar em quais são eles e converse com seus colegas.
-
-Não se preocupe com a simplicidade, o objetivo era que você pudesse treinar o raciocínio do algoritmo (ou ao menos uma das suas ideias principais).
-
-``` c
-
-edit(char palavra_um[], int tamanho_um, char palavra_dois[], int tamanho_dois){
-    int acoes = 0;
-
-    for (int i = 0; i < tamanho_um; i++){
-        
-        if (i < tamanho_dois) {
-            //uma forma de verificar a substituição
-            if (palavra_um[i] != palavra_dois[i]) {
-                acoes += 1;
-            }
-        } else {
-            //significa que a palavra um é maior e será preciso remover para que fiquem iguais
-            acoes += 1;
-        }
-    }
-
-    if (tamanho_um < tamanho_dois) {
-        //significa que a palavra um é menor e será preciso adicionar para que fiquem iguais
-        acoes += 1;
-    }
-
-}
-
-```
-
-
+Nesse exemplo, é importante ressaltar que há várias formas de fazer a mesma modificação de uma palavra para a outra. Sempre o número de passos será igual, mas não há uma ordem pré definida do que fazer primeiro. Nesse caso, podemos substituir `md é` por `md e` e fazer a adição do restante das letras `md l` e `md lar`.
 :::
 
 ???
+
+Nesse caso, bastaria comparar individualmente os caracteres e sua ordem para obter um resultado de quanto as palavras são diferentes ou semelhantes. 
 
 O Construto Matemático do Algoritmo 
 -----------
