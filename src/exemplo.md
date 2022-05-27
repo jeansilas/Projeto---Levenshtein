@@ -1,46 +1,10 @@
 Algoritmo de Programação Dinâmica para Distância de Edição
 ======
 
-O Problema
----------
-
-Imagine que você, como engenheiro de computação de uma empresa, foi requisitado para desenvolver uma ferramenta de correção automática de palavras em um texto.
-
-Nesse sentido a ideia seria que quando o usuário estivesse digitando no editor de ferramentas disponibilizado pela empresa, a ferramenta detectasse automaticamente que aquela palavra está ortograficamente errada, e, assim, sugerisse a forma correta:
-
-![](Corretor_Automatico.gif)
-
-Junto do seu time, vocês chegaram aos passos que teriam que ser executados em Sprints para o desenvolvimento de um MVP dessa ferramenta:
-
-
-
-1. *Ter um dicionário de palavras nas linguas que a ferramenta teria suporte*
-
-2. *Desensolver um modelo Bayesiano que identificasse qual a probabilidade de uma palavra aparecer próxima da outra*
-
-3. *Desenvolver um algoritmo que entenda o quão parecida uma palavra é com a outra*
-
-4. *Desenvolver um algoritmo que junta os passos anteriores, de modo a identificar uma palavra que não existe em uma lingua e devolver a mais próxima dela para o contexto das palavras próximas dela*
-
-5. *Desenvolver uma interface gráfica*
-
-
-Com isso o time decidiu que o Scrum Master da Sprint responsável pela *Passo* 3 seria você, ou seja, você tem o desafio de desenvolver um algoritmo capaz de entender a semelhança entre as palavras.
-
------------------------------------------------------
-
-Esse problema apresentado está inserido no escopo de *NLP* - **Natural Language Processing** -, ou em português, *PNL* - **Processamento de Linguagem Natural** -.
-
-Visto a ascensão de tecnologias de automação e a grande necessidade de tecnologias com a sua interface mais humana, um caso como esse não seria algo distante de ocorrer contigo. Dessa forma, podemos considerar o NLP um **Hot Topic**, ou seja, algo relevante para o contexto atual de tecnologia (e muito utilizado).
-
-Se você ficou preocupado de não saber como fazer isso, não se preocupe. Este Handout tem por objetivo te apresentar um modo de fazer isso.
-
 O Problema de identificar palavras parecidas
 --------------------------------------------
 
-O problema de entender o nível de semelhança entres palavras, na verdade é um problema que transcende o escopo das palavras e o universo de **NLP** ( ou em português, **PNL** ).
-
-A própria Google utiliza essa ferramenta no **Google Docs**:
+O problema de entender o nível de semelhança entres palavras é comum e precisa ser enfrentado diariamente nas mais diversas ferramentas. A própria Google utiliza essa ferramenta no **Google Docs**:
 
 ![](google_docs.png)
 
@@ -48,10 +12,14 @@ Um ótimo ponto de partida para começar a pensar na ideia de solução do probl
 
 ??? Atividade 1
 
-Reflita em um modo de pensar em quão parecidas são as palavras.
+Dado os dois grupos de palavras abaixo, qual dos grupos possui palavras mais semelhantes? É importante tentar listar os motivos.
+
+`md Estacionar` e `md Encaixar`
+
+`md Pão` e `md Chão`
 
 ::: Gabarito
-Uma solução é pensar em quanto passos teriamos que fazer de modo que uma palavra se torne a outra.
+Pão e Chão são palavras mais semelhantes pois o número de caracteres é mais próximo e possui maior quantidade de letras iguais em ambas as palavras.
 :::
 
 ???
