@@ -199,245 +199,405 @@ O Construto Matemático do Algoritmo
 Nesse momento, uma vez compreendidos os passos do algoritmo, é importante metodotizar o modo que implementaremos essa ideia para dar espaço à minimização de passos.
 
 
-Vamos começar a chamar cada passo - inserção, substituição ou remoção de caracter -  de **edição**. Também vamos chamar `md str1` e `md str2` as palavras que vamos usar e m e n seus tamanhos, respectivamente.
+Vamos começar a chamar cada passo - inserção, substituição ou remoção de caracter -  de **edição**. A partir daqui, a ideia é dar um custo para cada momento em que uma edição é feita.
 
-* `md str1`: Caixa, sendo  m = 5
-* `md str2`: Cama, sendo   n = 4
+Vamos exemplificar isso com as palavras abaixo:
 
-Aqui nós temos duas palavras representadas por `md str1` e `md str2` e precisamos pensar em quantidade mínimas de edições que tornem `md str1` e `md str2` iguais.
-
-Vamos pensar que, para olhar cada caracter, teremos um iterador para cada palavra:
-
-* `md i` itera na `md str1` = caixa
-* `md j` itera na `md str2` = cama
-
-E que na comparação, decidiremos que tipo (ou se precisaremos de edição) e o **custo** que cada edição trará. No caso desse algoritmo todas as edições possuem os mesmo custo, que é unitário:
-
-* caso os caracteres sejam iguais( `md i`=`md j`), não haverá nenhuma **edição** e e o `md custo` = 0
-
-* caso os caracteres sejam diferentes( `md i`$\ne$`md j`), haverá **edição** e o `md custo` = 1
-
-Porém, dependendo de qual **edição** utilizarmos, haverá a necessidade de utilizar mais ou menos **edições**, e como buscamos a minimização desse número precisamos sempre olhar para os caracteres buscando aquela edição que trará esse número mínimo.
-
-Então resumindo essa ideia em uma função matemática temos:
-
-$$ lev_{str1,str2}(i,j) = \begin{cases} 
-lev(i,j)& se&min(i,j) = 0,\\
-\\
-min\begin{cases}
-{lev_{str1,str2}(i-1,j)+1} \\  
-{lev_{str1,str2}(i,j-1)+1} \\      
-{lev_{str1,str2}(i-1,j-1)+1_{(str1_i \ne str2_j)}}
-\end{cases}\\
-   \end{cases}$$
-
-Modo Recursivo
---------------
-
-A ideia do modo recursivo é aplicar essas edições utilizando passos prévios, sem alocar um espaço de memória a longo prazo.
+* `md Palavra 1`: Cama.     
+* `md n` = 4. Sendo m o tamanho da `md Palavra 1` e `md j` o índice dela. (vai fazer sentido daqui a pouco o uso índice)
 
 
+![](Img_ex1.png)
 
-Então utilizando o exemplo de palavras anteriores, *caixa* e *cama*, com tamanhos m = 5 e n = 4, respectivamente.
+* `md Palavra 2`: Caixa.     
+* `md m` = 5. Sendo m o tamanho da `md Palavra 2` e `md i` o índice dela.
 
-Queremos achar o mínimo de edições necessárias para converter `md str1` em `md str2`.
+![](Img_ex2.png)
 
-Utilizando a mesma idea apresentada, vamos assumir que todas as edições possuem o mesmo custo de uma unidade e que elas serão contabilizadas quando os caracteres correspondentes forem iguais, caso contrário o custo será zero.
+Vamos começar a pensar o modo de comparação, para isso vamos pegar a palavra caixa como base para comparar com a cama.
 
- Para o caso o caso recursivo, começamos olhando os caracteres de cada palavra de trás para frente.
+Vamos começar com o custo zero. E vamos comparar os primeiros caractéres.
 
- E as condições para os caracteres são:
-
-*  *Se eles forem iguais, custo é 0 e retornamos m-1 e n-1 na recursão*
-
-* *Se eles forem diferentes e a edição for **inserção**, o custo é 1 e retornamos m e n-1 na recursão*
-
-* *Se eles forem diferentes e a edição for **remoção**, o custo é 1 e retornamos m-1 e n na recursão*
-
-* *Se eles forem diferentes e a edição for **substituição**, o custo é 1 e retornamos m-1 e n-1 na recursão*
+* **Custo** : 0
 
 
- Então temos:
+![](Img_ex3.png)
 
- `md caixa[m] = a` e `md cama[n] = a`. Nesse caso, como são iguais, o custo é zero, e o retorno na recursão é m-1 e n-1. 
+Os caractéres de índice `md i = 0` e `md j = 0` são iguais, logo não há necessidade de fazer nenhuma **edição**. logo:
 
-Quando ela chega no passo (isso quando m ou n é igual a 0), ela retorna n, caso m seja 0; ou retorna m, caso n seja 0;
+* **Custo** : 0
 
-Esse método funciona, porém ele não é muito eficiente devido a um problema.
+Bom, vamos continuar a nossa comparação. Mas quando formos comparar os índices `md i = 1` e `md j = 1` , não olharemos para somente para o carácter daquele índice mas de todos que vieram anteriormente. Isso quer dizer que comparar em um índice `md i = x` com `md j = y` é comparar o **"prefixo"** da palavra até o índice x e y das palavras respectivas.
 
-Tente reflitir sobre esse problema.
+* **Custo** : 0
+
+
+![](Img_ex4.png)
+
+Os prefixos de índice `md i = 1` e `md j = 1` são iguais, logo não há necessidade de fazer nenhuma **edição**. logo:
+
+* **Custo** : 0
+
+Agora vamos para os prefixos de índices `md i = 2` e `md j = 2`.
+
+
+![](Img_ex5.png)
+
+Os prefixos de índice `md i = 2` e `md j = 2`  não são iguais, logo há necessidade de fazer nenhuma **edição**. Como **M** é diferente de **I**, logo fazer uma **edição** de **substituição** de **I** por **M** é interessante. Ficando assim:
+
+![](Img_ex6.png)
+
+Logo:
+
+* **Custo** : 1
+
+
+
+![](Img_ex7.png)
+
+Agora vamos para os prefixos de índices `md i = 3` e `md j = 3`.
+
+??? Atividade 
+
+Tente fazer você esse próxima passo. Haverá edição ou não? Se sim qual edição ? Responda também se o custo muda, e caso mude qual será o novo valor.  
+
+
+
+
+::: Gabarito
+Os prefixos de índice `md i = 3` e `md j = 3`  não são iguais, logo há necessidade de fazer nenhuma **edição**. Como **A** é diferente de **X**, logo fazer uma **edição** de **substituição** de **X** por **A** é interessante. Ficando assim:
+
+![](Img_ex8.png)
+
+Logo:
+
+* **Custo** : 2
+:::
+
+???
+
+
+
+Agora vamos para os prefixos de índices `md i = 4` e `md j = 3`. Mas antes, observe que o índice `md j` não acresceu mais uma unidade...
 
 ??? Checkpoint
 
-Qual o problema com o modo recursivo? 
-
-**Dica**: `md tente desenhar a árvore do algoritmo`
+Responda porque o índice `md j` não acresce mais unidade a partir deste passo.
 
 ::: Gabarito
 
-Ele vai passar pelo mesmo caso de comparação mais de uma vez. Na verdade, isso faz com que a complexidade do algoritmo seja exponencial.
-
-Basta olhar para a árvore desse algoritmo na sua forma recursiva:
-
-![](arvore.drawio.svg)
+Isso ocorre porque ele atingiu o valor máximo da `md Palavra 2` que está definida por `md n`. Logo o índice  não pode ultrapassar o tamanho da string (neste caso, como índice começou em `md 0` então o valor máximo que ele pode atingir é `md n-1`)
 
 :::
 
 ???
 
+![](Img_ex9.png)
+
+
+Os prefixos de índice `md i = 4` e `md j = 3`  não são iguais, logo há necessidade de fazer nenhuma **edição**. Como **A** é diferente de **vazio**, logo fazer uma **edição** de **remoção** do **A** é interessante. Ficando assim:
+
+![](Img_ex10.png)
+
+Logo:
+
+* **Custo** : 3
+
+
+Agora os prefixos estão iguais. Então chegamos ao objetivo de tornar uma palavra igual a outra e a partir disso sabemos quanto custo foi necessário para isso acontecer.
+
+Vamos refeltir sobre esse processo e pensar em alguns pontos.
+
+Primeiro ponto é lembrar a cada passo que tinhamos estavamos avaliando qual edição iriamos fazer ou mesmo se não iriamos fazer. A razão disso está em uma ideia crucial para eficiência do problema.
+
+??? Reflexão
+
+Qual é essa ideia que é essencial para a eficiência do algoritmo ?
+
+::: Gabarito
+
+**Minimização** do custo de edições.
+
+:::
+
+???
+
+
+Segundo ponto é que a cada passo que davamos sempre chegavamos de uma parte menos completa para uma mais completa do problema. Podemos dizer então que estavamos sempre pensando em uma versão "maior" do problema a cada passo. Mas e se pensassemos de trás para frente, vulgo, ao invés de pensar em um problema cada vez maior pensassemos em um problema cada vez menor ?
+
+??? Reflexão
+
+Pensar sempre em uma versão menor do problema traz uma ideia que já estamos acostumados. Qual você acha que é essa ideia ?
+
+::: Gabarito 
+
+
+**Recursão**.
+
+:::
+
+???
+
+Então a partir dessa exercício com as palavras **cama** e **caixa**, fica mais fácil pensar em um modo algoritmíco de construir um porgrama que encontra a semelhança entre palavras objetificando a **minimização** do custo.
+
+Como a recursividade é a ideia que parece ser a mais natural, então vamos tentar trilhar essa vereda.
+
+
+--------------------------------------------------------------------------------
+
+Recursividade
+--------------
+
+A ideia do modo recursivo é olhar para a palavras e pensar em uma versão do problema cada vez **menor**
+
+
+
+Vamos utilizar os mesmos exemplos de **cama** e **caixa**
+
+mas dessa vez vamos tentar tornar a palavra **cama** em **caixa** e não o contrário.
+
+
+ Para o caso o caso recursivo, começamos olhando para a palavras inteiras e depois vamos pensando no prefixo de cada palavra.
+
+??? Checkpoint
+
+Quando pensamos em recursão, é necessário que haja uma condição raiz para que a recursão  encontre um ponto de término. Qual seria esse condição ?
+
+::: Gabarito
+
+Esse ponto seria o momento em que `md m = 0` ou `md n = 0`. Sendo n e m os tamanhos das palavras. 
+
+:::
+
+???
+
+Como já sabemos a condição para a recursão, vamos montar um pseucódigo recursivo para esse algoritmo.
+
+??? Pseudocódigo recursivo  
+
+``` python
+
+def levenshtein(palavra1, m, palavra2, n):
+    
+
+se (m == 0)
+    
+    retorna n
+
+se (n == 0)
+
+    retorna m
+
+
+se ( palavra1[m-1] == palavra2[n-1] )
+
+    retorna levenshtein(palavra1, m-1, palavra2, n-1)
+
+retorna 1 + min(levenshtein(palavra1, m, palavra2, n-1),
+                levenshtein(palavra1, m-1, palavra2, n-1),
+                levenshtein(palavra1, m-1, palavra2, n-1))
+
+
+
+```
+
+???
+
+Essa estrutura do pseucocódigo, consegue abarcar essa ideia de **recursividade** e e de **minimização de passos**.
+
+
+![140x140](ja_acabou.jpg)
+
+Brincadeiras a parte, ainda não acabou. Isso porque a forma recursiva não é a mais eficiente de se implementar um algoritmo para o Levehnstein.
+
+Para entender isso vamos tentar gerar a árvore baseada na versão recursiva.
+
+Vamos fazer isso olhando para o pseudocódigo já que na prática é o que ele pareceria no final.
+
+se comerçamos com `md m = 5` e `md n = 4` e chamarmos a função passando a `md palavra1` e `md palavra2`, então teremos uma função que começará com uma estrutura de **f(5,4)**.
+
+Na função do pseucódigo, há trẽs chamadas da própria função para visualizar a questão da **minimização**.( Vamos pensar no pior caso, o qual os caractéres não são iguais)
+
+Por recursão serão chamados então:
+
+* **f(5,3)**
+* **f(4,4)**
+* **f(4,3)**
+
+Desse modo temos a árvore:
+
+![140x140](arvore_building.png)
+
+A partir daqui já dá para entender o porquê a vereda recursiva do algoritmo não parece ser uma ideia eficiente.
+
+??? Checkpoint
+
+Para que fique ainda mais claro, complete mais uma andar da árvore de recursão
+
+::: Gabarito
+
+Ele vai passar pelo mesmo caso de comparação mais de uma vez. Na verdade, isso faz com que a complexidade do algoritmo seja exponencial.
+
+
+![140x140](arvore.drawio.png)
+
+:::
+
+???
+
+
 Por essa razão, é interessante pensar em um algoritmo com menor nível de complexidade.
+
+---------------------------------------------------------------------------------------------------------
+
 
 Algoritmo Melhorado
 ------------------
 
 Diferente do algoritmo anterior que não alocava memória, aqui nós vamos precisar fazer isso utilizando alocação dinâmica de matrizes.
 
-Vamos utilizar, novamente, o mesmo exemplo de palavras anteriores: *caixa* e *cama*, com tamanhos m = 5 e n = 4, respectivamente. sendo `md str1` caixa e `md str2` cama.
+Vamos utilizar, novamente, o mesmo exemplo de palavras anteriores: **caixa** e **cama**, com tamanhos `md m = 5` e `md n = 4`, respectivamente. sendo `md palavra1` caixa e `md palavra2` cama.
 
-A ideia aqui é preencher uma matriz utilizando a mesma lógica de custo para as edições do algoritmo, só que, ao preencher a matriz, haverá o incremento com os valores já adicionados. Isso ficará mais claro em sua demonstração.
+A ideia aqui é preencher uma matriz utilizando a mesma lógica de custo para as edições do algoritmo.
 
-* `md str1` = caixa
-* `md str2` = cama
-
- Vamos fazer um diagrama em formato de matriz para um melhor entendimento visual.*(Note que essa ainda não é a matriz que iremos preencher, mas sim uma maneira visual para facilitarmos a lógica)*:
+Vamos fazer um diagrama em formato de matriz para um melhor entendimento visual.*(Note que essa ainda não é a matriz que iremos preencher, mas sim uma maneira visual para facilitarmos a lógica)*:
 
 ![](matriz1.png)
 
-E então preenchemos o array subsequente a palavra com uma númeração de 1 a m, para a `md str1` e 1 a n, para a `md str2`.
+Para preencher a primeira linha e primeira coluna é só lembrarmos que eles funcionam como string vazia.
+
+Mas como vamos preencher eles numericamente ?
+
+vamos olhar para o a posição do canto superior esquedo vazia:
+
+Tanto na vertical e na horizontal dele temos `md #`, logo aquele prefixo já é igual. Então o valor daquela posição vai ser `md 0 `, já que para aquele prefixo até aquele ponto seja igual não foi necessário nenhuma modificação.
+
+Já se olharmos para o valor seguinte na mesma linha, para que o prefixo `md #` se torne `md #c` é necessária uma **edição**. Logo o valor daquele posição será `md 1`.
+
+Agora se pensarmos para os valores seguintes da mesma linha seguirão a mesma lógica.
+
+
+
+??? Atividade
+
+Preencha essa matriz para a primeira linha e coluna
+
+**Dica** : *A mesma lógica para preenchimento de coluna é a mesma para a linha*
+
+::: Gabarito
 
 ![](matriz2.png)
 
-Uma vez apresentado esse diagrama , a lógica para preencher essa matriz que efetivamente utilizaremos é a seguinte:
+:::
 
-* i itera nas linhas
-* j itera nas colunas
+???
 
-$$ lev_{str1,str2}(i,j) = \begin{cases} 
-lev(i,j)& & & &se&       min(i,j) = 0,\\
-\\
-min\begin{cases}
-{lev(i-1,j)+1} \\  
-{lev(i,j-1)+1} \\      
-{lev(i-1,j-1)+1_{(str1_i \ne str2_j)}}
-\end{cases}\\
-   \end{cases}$$
+Bom, continuemos a lógica de preenchimento.
 
-Com isso, queremos preencher o espaço em vermelho destacado no diagrama que é a matriz onde efetivamente vamos preencher. Como queremos preenchê-la do canto superior esquerdo até o canto inferior esquerdo então `md i` e `md j` começam ambos em 1. Já que consideramos os valores dos índices das palavras como espaço da matriz também.
+Como queremos que o prefixo da linha até o quadrado do canto superior esquerdo vazio tanto da coluna tanto da sejam iguais então. Tanto na coluna e na linha encontramos `md #c` , logo não precisamos de edição. Então o custo naquela posição será zero.
 
-![](matriz3.png)
+![](matriz3_1.png)
 
-A partir disso, ele vai usar a lógica matemática do algortimo que foi apresentada, só que aqui na matriz.
+Agora é só continuar com a mesma lógica
 
-Um exemplo para os casos em que `md i` = 1 e `md j` = 1:
+??? Preenchendo a matriz
 
-![](matriz4.png)
+:slides
 
-$$ lev_{str1,str2}(1,1) = \begin{cases} 
-min\begin{cases}
-{lev(0,1)+1 = 1 + 1 = 2} \\  
-{lev(1,0)+1 = 1 + 1 = 2} \\      
-{lev(0,0)+1_{(str1_i \ne str2_j)} = 0 + 1 =1}
-\end{cases}\\
-   \end{cases}$$
+???
 
-$$ lev_{str1,str2}(1,1) = \begin{cases} 
-min\begin{cases}
-{2} \\  
-{2} & & = 1\\      
-{1}
-\end{cases}\\
-   \end{cases}$$
+Então, matriz preenchida. Legal né?! Será que não existe uma maneira mais *"robótica"* de fazer isso de modo que consigamos escrever isso.
 
-Como neste caso, ${ min(1,1) = 0}$, então temos que ${lev_{str1,str2}(1,1) = 1}$, e assim a matriz é preenchida:
+??? Algoritmo de preenchimento de matriz
 
-![](matriz5.png)
+Se você percebeu existe uma regrinha a partir dessa matriz que nos ajuda **MUITO** a fazer isso mais rápido e que envolve a ideia de **minimização**
 
-Vamos fazer outro exemplo para os casos em que `md i` = 1 e `md j` = 2:
-Como neste caso, ${ min(1,2) \ne 0}$, então temos:
+![](delicia.gif)
 
-$$ lev_{str1,str2}(1,2) = \begin{cases} 
-min\begin{cases}
-{lev(0,2)+1 = 2 + 1 = 3} \\  
-{lev(1,1)+1 = 1 + 1 = 2} \\      
-{lev(0,1)+1_{(str1_i \ne str2_j)} = 1 + 1 =2}
-\end{cases}\\
-   \end{cases}$$
+A ideia é a seguinte:
 
-$$ lev_{str1,str2}(1,2) = \begin{cases} 
-min\begin{cases}
-{3} \\  
-{2} & & = 2\\      
-{2}
-\end{cases}\\
-   \end{cases}$$
+*Como queremos a minimização das edições, basta olharmos para três posições*:
 
-Portanto, ${lev_{str1,str2}(1,2) = 2}$, e assim a matriz é preenchida:
+* **Para a posição acima do quadrado ( Se existir)**
+* **Para a posição a esquerda do quadrado**
+* **Para a posição na diagonal esquerda para cima do quadrado ( Se existir)**
 
-![](matriz6.png)
+Basta repetir o menor desses valores. Caso os valores da a últimas caractéres da coluna e linha sejam diferentes você adiciona um a esse valor.
 
+Vamos fazer um exemplo:
 
-Depois de repetimos o processo até a matriz ser preenchida, temos a seguinte matriz:
+![](bb.png)
 
-![](matriz7.png)
+Para preencher o primeiro quadrado olhamos para os valores de:
 
-Uma vez que a matriz está completa, basta olharmos para o valor do canto inferior direito. Ele é a distância de **edição de levenshtein entre as palavras caixa e cama**: *2*.
+* **cima** : `md 1`
+* **esquerda** : `md 1`
+* **esquerda-cima** : `md 0`
 
+O menor valor é `md 0`
 
+Pegamos esse valor e verificamos se os ultimos caractéres da linha e coluna são iguais ou não. Como são iguais, não adicionamos `md 1` ao menor valor.
 
-Ufa!!! Finalmente chegamos a entender a ideia do algoritmo de edição de distância de Levenshtein. Agora só falta uma coisa: escrever efetivamente um código desse algoritmo em C.
+Logo o quadrado fica com valor de `md 0`:
 
-Mas essa tarefa eu vou deixar você tentar fazer.
+![](bb1.png)
 
+Vamos para o próximo.
 
-??? Atividade 4
+ **cima** : `md 2`
+* **esquerda** : `md 0`
+* **esquerda-cima** : `md 1`
 
-Escreva um programa em **C** que implemente a versão que utiliza alocação de **matriz dinâmica** do **algoritmo de edição de distância de levenshtein**
+O menor valor é `md 0`
+
+Pegamos esse valor e verificamos se os ultimos caractéres da linha e coluna são iguais ou não. Como não são iguais, adicionamos `md 1` ao menor valor.
+
+Logo o quadrado fica com valor de `md 1`:
+
+![](bb2.png)
+
+Vamos fazer só mais um para que fique bem claro.
+
+ **cima** : `md 3`
+* **esquerda** : `md 1`
+* **esquerda-cima** : `md 2`
+
+O menor valor é `md 1`
+
+Pegamos esse valor e verificamos se os ultimos caractéres da linha e coluna são iguais ou não. Como não são iguais, adicionamos `md 1` ao menor valor.
+
+Logo o quadrado fica com valor de `md 2`:
+
+![](bb3.png)
+
+???
+
+??? Checkpoint
+
+Ficou mais claro agora né?!
+
+![](makes_sense.gif)
+
+Bom, agora tente você terminar de completar as últimas 2 linhas da matriz
 
 ::: Gabarito
 
-``` c
-int edit_distance_dinamic(char str1[], int m, char str2[], int n) {
-    
-    int length [n+1][m+1];
-
-    for (int i = 0; i <= m; i++){
-        for (int j = 0; j <= n; j++){
-
-            if (i == 0){
-                length[i][j] = j;
-            } else if (j == 0) {
-                length[i][j] = i;
-            } else if (str1[i-1] == str2[j-2]) {
-                length[i][j] = length[i-1][j-1];
-            } else {
-                length[i][j] = 1 + min(lengh[i-1][j],
-                                        length[i][j-1],
-                                        lenght[i-1][j-1]
-                                    );
-            }
-        }
-    }
-
-    return length[m][n];
-    
-}
-```
+:slides2
 
 :::
 
 ???
 
-??? CheckPoint
+Se você entendeu bem a ideia, provavelmente deve ter pescado que o número de menor passo que você precisa tomar para tornar uma palavra em outra é o número do canto inferior direito.
 
-Olhando para a sua implementação da distância de edição utilizando matriz dinâmica, qual seria a complexidade do algoritmo?
+Voltando ao exemlo da `md cama` e `md caixa` a distância de Levehnstein seria `md 2`
 
-::: Gabarito
-Na impementação do algoritmo, de forma geral, há apenas a necessidade de preencher uma matriz `md m` por `md n`. Portanto:
-$$O(mn)$$
+![](m20.png)
 
-:::
 
-???
+Ufa!!! Finalmente chegamos a entender a ideia do algoritmo de edição de distância de Levenshtein.
+
+![](brabo.gif)
 
 Parabéns!!! Você chegou ao final da Sprint, e, portanto, cumpriu sua tarefa. Mas para assegurar que você entendeu bem a ideia, pratique alguns exercícios a seguir.
 
